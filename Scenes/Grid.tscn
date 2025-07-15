@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://cg3c37qlc03"]
+
+[ext_resource type="Script" uid="uid://dqga1owdkttsp" path="res://Scenes/Scripts/grid.gd" id="1_5bwvu"]
+[ext_resource type="PackedScene" uid="uid://cwk73pnxgk8v6" path="res://Scenes/Blocks/TetrisBlock_J.tscn" id="2_f78f0"]
+
+[node name="Grid" type="Node3D"]
+script = ExtResource("1_5bwvu")
+
+[node name="TICK_SPEED" type="Timer" parent="."]
+wait_time = 1.5
+
+[node name="TetrisBlockJ" parent="." instance=ExtResource("2_f78f0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 291.224, 727.193, 0)
+COLOR = 4

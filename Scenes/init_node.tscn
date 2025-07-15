@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dg057ulifj3jo"]
+
+[ext_resource type="PackedScene" uid="uid://bqmev6jstv4c0" path="res://Scenes/game_cube.tscn" id="1_ke7nq"]
+
+[node name="INIT_NODE" type="Node3D"]
+
+[node name="GameCube" parent="." instance=ExtResource("1_ke7nq")]
+visible = false

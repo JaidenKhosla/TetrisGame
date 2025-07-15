@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cwk73pnxgk8v6"]
+
+[ext_resource type="Script" uid="uid://dte2syprmkkqc" path="res://Scenes/Scripts/Tetrimino.gd" id="1_f4xmq"]
+[ext_resource type="PackedScene" uid="uid://bqmev6jstv4c0" path="res://Scenes/game_cube.tscn" id="2_0nal3"]
+
+[node name="TetrisBlockJ" type="Node3D"]
+script = ExtResource("1_f4xmq")
+COLOR = 2
+
+[node name="GameCube" parent="." instance=ExtResource("2_0nal3")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -75.9449, 74.5859, 0)
+
+[node name="GameCube2" parent="." instance=ExtResource("2_0nal3")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -77.0486, -73.4141, 0)
+
+[node name="GameCube3" parent="." instance=ExtResource("2_0nal3")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 72.1534, -73.4141, 0)
+
+[node name="GameCube4" parent="." instance=ExtResource("2_0nal3")]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 219.574, -73.1482, 0.632423)
