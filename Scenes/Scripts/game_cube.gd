@@ -9,7 +9,8 @@ enum COLORS {
 	YELLOW,
 	GREEN,
 	CYAN,
-	PURPLE
+	PURPLE,
+	WHITE,
 }
 
 const colorArray = [
@@ -19,7 +20,8 @@ const colorArray = [
 	Color.YELLOW, #YELLOW
 	Color.LIME_GREEN, #GREEN
 	Color.CYAN, #CYAN
-	Color.REBECCA_PURPLE #PURPLE
+	Color.REBECCA_PURPLE, #PURPLE
+	Color.WHITE
 ]
 @onready var model: MeshInstance3D = $model;
 @export var color: COLORS:
