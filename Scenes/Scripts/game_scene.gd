@@ -1,0 +1,30 @@
+extends Node3D
+
+@onready var Camera: Camera3D = $Camera3D
+const CENTER = Vector3i(0,0,0)
+const RADIUS = 585
+
+var angle = 270
+var step = 11;
+
+func getPosFromAngle(angl: int) -> Vector3:
+	return Vector3(RADIUS * cos(deg_to_rad(angl)), Camera.global_position.y, RADIUS * sin(deg_to_rad(angl)))
+	Camera.look_at(CENTER)
+	
+func _process(delta: float) -> void:
+	if Engine.is_editor_hint(): return
+	
+	var DIRECTION = Vector3.ZERO
+	
+	if Input.is_action_pressed("MOVE_CAMERA_RIGHT"):
+		DIRECTION += Camera.transform.basis.x
+	if Input.is_action_pressed("MOVE_CAMERA_LEFT"):
+		DIRECTION -= Camera.transform.basis.x
+	if Input.is_action_pressed("MOVE_CAMERA_FORWARD"):
+		DIRECTION -= Camera.transform.basis.z
+	if Input.is_action_pressed("MOVE_CAMERA_BACKWARD"):
+		DIRECTION += Camera.transform.basis.z
+
+	DIRECTION = DIRECTION.normalized()
+	
+	Camera.global_position+=DIRECTION*step

@@ -11,6 +11,8 @@ enum COLORS {
 	CYAN,
 	PURPLE,
 	WHITE,
+	GREY,
+	LIGHT_GREY
 }
 
 const colorArray = [
@@ -21,13 +23,14 @@ const colorArray = [
 	Color.LIME_GREEN, #GREEN
 	Color.CYAN, #CYAN
 	Color.REBECCA_PURPLE, #PURPLE
-	Color.WHITE
+	Color.WHITE, #WHITE
+	Color.DIM_GRAY, #GRAY
+	Color.LIGHT_GRAY 
 ]
 @onready var model: MeshInstance3D = $model;
 @export var color: COLORS:
 	set(clr):
 		color = clr
-		print(color)
 		updateMaterial(colorArray[color])
 
 func get_size() -> Vector3:

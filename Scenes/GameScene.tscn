@@ -1,11 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://ddbvir0xqgfam"]
+[gd_scene load_steps=3 format=3 uid="uid://ddbvir0xqgfam"]
 
 [ext_resource type="PackedScene" uid="uid://cg3c37qlc03" path="res://Scenes/Grid.tscn" id="1_2wl7v"]
+[ext_resource type="Script" uid="uid://b0noms1r684s" path="res://Scenes/Scripts/game_scene.gd" id="1_4bvgx"]
 
-[node name="Node3D" type="Node3D"]
+[node name="GameScene" type="Node3D"]
+script = ExtResource("1_4bvgx")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.961966, 0.27317, 0, -0.27317, 0.961966, 0, 1106.28, 3906.08)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1325.69, 1192.96, 3873.5)
+fov = 81.8
+near = 10.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.996917, 0.0774307, -0.0126618, -0.0662987, -0.917661, -0.391794, -0.0419561, -0.389747, 0.919966, -99.2277, 1264.96, 1714.95)
