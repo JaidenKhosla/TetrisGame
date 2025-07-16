@@ -16,6 +16,15 @@ const COLUMNS = 10;
 
 var GRID: Array[Array] = []
 
+func prettyPrint(grid: Array[Array]) -> String:
+	var s = ""
+	for row in grid:
+		for col in row:
+			if col == null: s+="."
+			else: s+="#"
+		s+='\n'
+	return s 
+
 @onready var SELECTED_TETRIMINO: Tetrimino
 var initialPrev = Vector3(-1,-1,-1)
 var prevPos = initialPrev
@@ -53,8 +62,14 @@ func setupGrid():
 			if pushForward: grid_cube.color = GameCube.COLORS.LIGHT_GREY
 			grid_cube.position = pos
 
+var prevColor = GameCube.COLORS.RED
+
 func spawn_random_piece():
-	var randomColor = GameCube.usableColors.pick_random()
+	var randomColor = GameCube.usableColors.filter(func(e):
+		return e != prevColor
+	).pick_random()
+	
+	prevColor = randomColor
 	
 	var shape = Shapes.pick_random()
 	
@@ -68,7 +83,7 @@ func spawn_random_piece():
 func set_piece() -> void:
 	if not SELECTED_TETRIMINO: return
 	for cube in SELECTED_TETRIMINO.cubes:
-		if cube is GameCube:
+		if (cube and not cube.is_queued_for_deletion() and is_instance_valid(cube)) and cube is GameCube:
 			var gridCoords = to_grid_coords(cube.global_position)
 			GRID[gridCoords.y][gridCoords.x] = cube
 	await SELECTED_TETRIMINO.blink()
@@ -82,10 +97,10 @@ func _ready() -> void:
 	#SELECTED_TETRIMINO.draw(Vector3(0,0,0))
 	TICK_SPEED.timeout.connect(func():
 		#print("TICK")
+		print(prettyPrint(GRID))
 		
-		
-		if not SELECTED_TETRIMINO:
-			clearRows()
+		if SELECTED_TETRIMINO == null:
+			await clearRows()
 			spawn_random_piece()
 		
 		var res: bool = await handle_move(to_global_direction(Vector3(0,-1,0)))
@@ -127,11 +142,17 @@ func handle_move(global_direction: Vector3) -> bool:
 	if not SELECTED_TETRIMINO: return false
 		
 	for cube in SELECTED_TETRIMINO.cubes:
+		if not cube or cube.is_queued_for_deletion() or not is_instance_valid(cube): continue
 		var goalCubePos = to_grid_coords(cube.global_position + global_direction)
-		if not_in_bounds(goalCubePos) or is_occupied(goalCubePos, SELECTED_TETRIMINO):
+		
+		var notInBounds = not_in_bounds(goalCubePos)
+		var is_occupied = is_occupied(goalCubePos, SELECTED_TETRIMINO)
+		
+		if notInBounds or is_occupied:
+			if(notInBounds): print("OUT OF BOUNDS")
+			if(is_occupied): print("OCCUPIED")
 			return false
 	await get_tree().process_frame
-	updateGrid(SELECTED_TETRIMINO)
 	clearFromGrid()
 	await SELECTED_TETRIMINO.tween_move(global_direction)
 	updateGrid(SELECTED_TETRIMINO)
@@ -139,16 +160,23 @@ func handle_move(global_direction: Vector3) -> bool:
 
 
 func clearRows():
-	
-	var lowestRow = -1
-	
+	clearFromGrid()
 	for row_idx in range(GRID.size()):
 		var row = GRID[row_idx]
-		if row.filter(func(e): return e != null).size() == row.size():
-			lowestRow = min(lowestRow, row_idx)
+		if row.filter(func(e: Node): return e != null and not e.is_queued_for_deletion() and is_instance_valid(e)).size() == row.size():
 			for i in range(row.size()):
 				row[i].queue_free()
 				row[i] = null
+			for aboveRow in range(row_idx-1, -1, -1):
+				for column in range(GRID[aboveRow].size()):
+					var cube = GRID[aboveRow][column]
+					if cube == null or cube.is_queued_for_deletion() or not is_instance_valid(cube): continue
+					GRID[aboveRow][column] = null
+					GRID[aboveRow+1][column] = cube
+					cube.position -= Vector3(0, CUBE_SIZE.y*0.75, 0)
+	for tetrimino in get_children():
+		if tetrimino is Tetrimino and tetrimino.get_child_count() == 0:
+				tetrimino.queue_free()
 
 func clearFromGrid():
 	for row_idx in range(GRID.size()):
@@ -156,13 +184,13 @@ func clearFromGrid():
 			var cube = GRID[row_idx][col_idx]
 			if cube == null: continue
 			if cube is GameCube:
-				if cube.is_queued_for_deletion() or is_instance_valid(cube):
+				if cube.is_queued_for_deletion() or not is_instance_valid(cube):
 					GRID[row_idx][col_idx] = null
 					continue
 				var coords = to_grid_coords(cube.global_position)
 				
-				print("GRID COORDS: %v" % coords)
-				print("DESIRED: %v" % Vector3i(col_idx, row_idx, 0))
+				#print("GRID COORDS: %v" % coords)
+				#print("DESIRED: %v" % Vector3i(col_idx, row_idx, 0))
 				
 				if coords.y != row_idx or coords.x != col_idx:
 					GRID[row_idx][col_idx] = null

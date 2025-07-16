@@ -8,12 +8,14 @@ script = ExtResource("1_4bvgx")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1325.69, 1192.96, 3873.5)
+current = true
 fov = 81.8
-near = 10.0
+near = 0.1
+far = 10000.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.996917, 0.0774307, -0.0126618, -0.0662987, -0.917661, -0.391794, -0.0419561, -0.389747, 0.919966, -99.2277, 1264.96, 1714.95)
-light_energy = 1.453
+light_energy = 0.762
 shadow_enabled = true
 
 [node name="Grid" parent="." instance=ExtResource("1_2wl7v")]
