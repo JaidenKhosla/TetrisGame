@@ -1,16 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cg3c37qlc03"]
+[gd_scene load_steps=2 format=3 uid="uid://cg3c37qlc03"]
 
 [ext_resource type="Script" uid="uid://dqga1owdkttsp" path="res://Scenes/Scripts/grid.gd" id="1_5bwvu"]
-[ext_resource type="Script" uid="uid://dte2syprmkkqc" path="res://Scenes/Scripts/Tetrimino.gd" id="2_f78f0"]
 
 [node name="Grid" type="Node3D"]
 script = ExtResource("1_5bwvu")
 
-[node name="TICK_SPEED" type="Timer" parent="."]
-wait_time = 1.5
-
 [node name="GridParts" type="Node3D" parent="."]
-
-[node name="Tetrimino" type="Node3D" parent="."]
-script = ExtResource("2_f78f0")
-metadata/_custom_type_script = "uid://dte2syprmkkqc"

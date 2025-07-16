@@ -15,6 +15,10 @@ enum COLORS {
 	LIGHT_GREY
 }
 
+const usableColors = [
+	COLORS.RED, COLORS.BLUE, COLORS.ORANGE, COLORS.YELLOW, COLORS.GREEN, COLORS.CYAN, COLORS.PURPLE
+]
+
 const colorArray = [
 	Color.RED, #RED
 	Color.BLUE, #BLUE

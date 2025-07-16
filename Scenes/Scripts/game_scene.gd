@@ -7,11 +7,11 @@ const RADIUS = 585
 var angle = 270
 var step = 11;
 
-func getPosFromAngle(angl: int) -> Vector3:
-	return Vector3(RADIUS * cos(deg_to_rad(angl)), Camera.global_position.y, RADIUS * sin(deg_to_rad(angl)))
-	Camera.look_at(CENTER)
-	
-func _process(delta: float) -> void:
+#func getPosFromAngle(angl: int) -> Vector3:
+	#return Vector3(RADIUS * cos(deg_to_rad(angl)), Camera.global_position.y, RADIUS * sin(deg_to_rad(angl)))
+	#Camera.look_at(CENTER)
+	#
+func _process(_delta: float) -> void:
 	if Engine.is_editor_hint(): return
 	
 	var DIRECTION = Vector3.ZERO

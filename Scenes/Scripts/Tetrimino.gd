@@ -13,6 +13,8 @@ var cube = preload("res://Scenes/game_cube.tscn")
 @onready var CUBE_SIZE: Vector3 =  await (InitNode.get_node("GameCube") as GameCube).get_size()
 const colorEnum = GameCube.COLORS
 
+var is_transforming: bool = false
+
 var shape: Array
 var curr_idx = 0
 var curr_origin: Vector3 = Vector3.ZERO
@@ -31,10 +33,13 @@ var isRotating = false
 
 func draw(origin: Vector3):
 	curr_origin = origin
+	global_position = origin
+	print("DRAW ORIGIN: %v" % curr_origin)
 	var bitmap = shape[curr_idx]
 	for pos in bitmap:
 		var newCube: GameCube = cube.instantiate()
 		add_child(newCube)
+		newCube.color = COLOR
 		newCube.global_position = origin + Vector3(pos.x, pos.y, 0)*CUBE_SIZE*0.75
 	setCubes()
 func rotate_piece():
@@ -58,9 +63,15 @@ func tween_rotate(deg: float) -> int:
 	return 1
 	
 func tween_move(direction: Vector3) -> int:
+	if is_transforming: return 0;
+	is_transforming = true
 	var goal = global_position+direction;
+	#print("GLOBAL POS: %v" % global_position)
+	#print("DIRECTION: %v" % direction)
 	curr_origin = goal
+	#print("MOVE ORIGIN: %v" % curr_origin)
 	await create_tween().tween_property(self, "global_position", goal, 0.25).finished
+	is_transforming = false
 	return 1
 
 func blink() -> void:
