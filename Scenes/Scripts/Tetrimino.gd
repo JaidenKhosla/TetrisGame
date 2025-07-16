@@ -19,12 +19,15 @@ var shape: Array
 var curr_idx = 0
 var curr_origin: Vector3 = Vector3.ZERO
 
+var last_coords: Array[Vector3i] = []
+
 func addShape(new_shape: Array):
 	shape = new_shape
 
 @export var COLOR: colorEnum:
 	set(clr):
 		COLOR = clr
+		setCubes()
 		for cube in cubes:
 			if cube is GameCube:
 				cube.updateMaterial(GameCube.colorArray[COLOR])
@@ -40,8 +43,10 @@ func draw(origin: Vector3):
 		var newCube: GameCube = cube.instantiate()
 		add_child(newCube)
 		newCube.color = COLOR
-		newCube.global_position = origin + Vector3(pos.x, pos.y, 0)*CUBE_SIZE*0.75
+		newCube.position = Vector3(pos.x, pos.y, 0)*CUBE_SIZE*0.75
+	await get_tree().process_frame
 	setCubes()
+	
 func rotate_piece():
 	curr_idx = (curr_idx+1)%shape.size()
 	clear()
