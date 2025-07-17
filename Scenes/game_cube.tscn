@@ -1,12 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://bqmev6jstv4c0"]
+[gd_scene load_steps=5 format=3 uid="uid://bqmev6jstv4c0"]
 
 [ext_resource type="Script" uid="uid://8b87oweudiav" path="res://Scenes/Scripts/game_cube.gd" id="1_nncsj"]
 [ext_resource type="ArrayMesh" uid="uid://du6twwygnocy5" path="res://Assets/gameCube.obj" id="2_nncsj"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nncsj"]
 albedo_color = Color(1, 0, 0, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_818e5"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nncsj"]
 size = Vector3(150, 150, 150)
@@ -17,7 +15,6 @@ script = ExtResource("1_nncsj")
 [node name="model" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
 material_override = SubResource("StandardMaterial3D_nncsj")
-material_overlay = SubResource("StandardMaterial3D_818e5")
 visibility_range_end = 10000.0
 mesh = ExtResource("2_nncsj")
 

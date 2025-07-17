@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.4", "GL Compatibility")
 [autoload]
 
 InitNode="*res://Scenes/init_node.tscn"
+UserInterface="*res://Scenes/user_interface.tscn"
 
 [input]
 

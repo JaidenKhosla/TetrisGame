@@ -4,6 +4,7 @@
 
 [node name="Grid" type="Node3D"]
 script = ExtResource("1_5bwvu")
+TICK_SPEED = null
 
 [node name="GridParts" type="Node3D" parent="."]
 

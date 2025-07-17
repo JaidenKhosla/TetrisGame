@@ -6,6 +6,7 @@
 albedo_color = Color(0.411765, 0.411765, 0.411765, 1)
 
 [node name="GameCube" instance=ExtResource("1_62lky")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.245026, 0, 0.127014)
 color = 8
 
 [node name="model" parent="." index="0"]

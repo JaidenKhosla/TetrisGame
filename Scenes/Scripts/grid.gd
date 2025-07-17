@@ -2,8 +2,8 @@
 class_name Grid extends Node3D
 
 @onready var CUBE_SIZE: Vector3 =  await (InitNode.get_node("GameCube") as GameCube).get_size()
-@onready var TICK_SPEED: Timer = $TICKSPEED #seconds between each tick
-
+@onready var TICK_SPEED_TIMER: Timer = $TICKSPEED #seconds between each tick
+@export var TICK_SPEED: int = 0.8
 
 var Tetrimino_Arrangements = TetriminoArrangements.new()
 @onready var Shapes = Tetrimino_Arrangements.shapes
@@ -13,25 +13,15 @@ var packed_grid_cube = preload("res://Scenes/GridBlock.tscn")
 const ROWS = 20;
 const COLUMNS = 10;
 
+var lines_cleared = 0
 
 var GRID: Array[Array] = []
-
-func prettyPrint(grid: Array[Array]) -> String:
-	var s = ""
-	for row in grid:
-		for col in row:
-			if col == null: s+="."
-			else: s+="#"
-		s+='\n'
-	return s 
-
 @onready var SELECTED_TETRIMINO: Tetrimino
 var initialPrev = Vector3(-1,-1,-1)
 var prevPos = initialPrev
 
 @onready var TOP: float = self.global_position.y + (ROWS-2)*CUBE_SIZE.y*0.75
 @onready var SPAWNING_POSITION: Vector3 = to_global_coords(Vector3i(3,0,0)) + Vector3(0,TOP,0)
-
 
 func to_global_coords(pos: Vector3i) -> Vector3:
 	return global_position+to_global_direction(pos);
@@ -89,26 +79,6 @@ func set_piece() -> void:
 	await SELECTED_TETRIMINO.blink()
 	print("SPAWNING NEW ONE!")
 	SELECTED_TETRIMINO = null
-
-func _ready() -> void:
-	#print(SPAWNING_POSITION)
-	setupGrid()
-	#SELECTED_TETRIMINO.addShape(Tetrimino_Arrangements.j)
-	#SELECTED_TETRIMINO.draw(Vector3(0,0,0))
-	TICK_SPEED.timeout.connect(func():
-		#print("TICK")
-		print(prettyPrint(GRID))
-		
-		if SELECTED_TETRIMINO == null:
-			await clearRows()
-			spawn_random_piece()
-		
-		var res: bool = await handle_move(to_global_direction(Vector3(0,-1,0)))
-		if not res: set_piece()
-		TICK_SPEED.start()
-	)
-	
-	TICK_SPEED.start()
 	
 func not_in_bounds(goalCubePos: Vector3i) -> bool:
 	return goalCubePos.x < 0 or goalCubePos.x >= GRID[0].size() or goalCubePos.y < 0 or goalCubePos.y >= GRID.size()
@@ -164,6 +134,7 @@ func clearRows():
 	for row_idx in range(GRID.size()):
 		var row = GRID[row_idx]
 		if row.filter(func(e: Node): return e != null and not e.is_queued_for_deletion() and is_instance_valid(e)).size() == row.size():
+			lines_cleared+=1
 			for i in range(row.size()):
 				row[i].queue_free()
 				row[i] = null
@@ -194,7 +165,7 @@ func clearFromGrid():
 				
 				if coords.y != row_idx or coords.x != col_idx:
 					GRID[row_idx][col_idx] = null
-	
+
 func updateGrid(tetrimino: Tetrimino):
 	#print(GRID)
 	#print("\n\n")
@@ -207,6 +178,38 @@ func updateGrid(tetrimino: Tetrimino):
 			tetrimino.last_coords.append(coords)
 			GRID[coords.y][coords.x] = cube
 var prevTime = 0
+
+func prettyPrint(grid: Array[Array]) -> String:
+	var s = ""
+	for row in grid:
+		for col in row:
+			if col == null: s+="."
+			else: s+="#"
+		s+='\n'
+	return s 
+
+func _ready() -> void:
+	TICK_SPEED_TIMER.wait_time = TICK_SPEED
+	#print(SPAWNING_POSITION)
+	setupGrid()
+	#SELECTED_TETRIMINO.addShape(Tetrimino_Arrangements.j)
+	#SELECTED_TETRIMINO.draw(Vector3(0,0,0))
+	TICK_SPEED_TIMER.timeout.connect(func():
+		#print("TICK")
+		print(prettyPrint(GRID))
+		
+		if SELECTED_TETRIMINO == null:
+			await clearRows()
+			spawn_random_piece()
+		
+		var res: bool = await handle_move(to_global_direction(Vector3(0,-1,0)))
+		if not res: set_piece()
+		TICK_SPEED_TIMER.wait_time = TICK_SPEED
+		TICK_SPEED_TIMER.start()
+	)
+	
+	TICK_SPEED_TIMER.start()
+
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint(): return
 	

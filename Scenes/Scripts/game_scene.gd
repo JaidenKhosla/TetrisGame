@@ -1,6 +1,7 @@
 extends Node3D
 
 @onready var Camera: Camera3D = $Camera3D
+
 const CENTER = Vector3i(0,0,0)
 const RADIUS = 585
 
