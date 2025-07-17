@@ -3,9 +3,10 @@ class_name Grid extends Node3D
 
 @onready var CUBE_SIZE: Vector3 =  await (InitNode.get_node("GameCube") as GameCube).get_size()
 @onready var TICK_SPEED_TIMER: Timer = $TICKSPEED #seconds between each tick
-@export var TICK_SPEED: int = 0.8
+var TICK_SPEED: float = 0.8
 
 var Tetrimino_Arrangements = TetriminoArrangements.new()
+var LevelInstance = Level.new()
 @onready var Shapes = Tetrimino_Arrangements.shapes
 @onready var GridParts = $GridParts
 var tetrimino = preload("res://Scenes/tetrimino.tscn")
@@ -17,8 +18,11 @@ var lines_cleared = 0
 
 var GRID: Array[Array] = []
 @onready var SELECTED_TETRIMINO: Tetrimino
+
 var initialPrev = Vector3(-1,-1,-1)
 var prevPos = initialPrev
+var prevColor = GameCube.COLORS.RED
+var prevTime = 0
 
 @onready var TOP: float = self.global_position.y + (ROWS-2)*CUBE_SIZE.y*0.75
 @onready var SPAWNING_POSITION: Vector3 = to_global_coords(Vector3i(3,0,0)) + Vector3(0,TOP,0)
@@ -37,8 +41,7 @@ func to_grid_coords(pos: Vector3) -> Vector3i:
 		round((pos.z - global_position.z)/(CUBE_SIZE.z*0.75))
 	)
 
-
-func setupGrid():
+func setupGrid() -> void:
 	GRID.resize(ROWS);
 	for i in range(GRID.size()):
 		GRID[i] = []
@@ -52,9 +55,7 @@ func setupGrid():
 			if pushForward: grid_cube.color = GameCube.COLORS.LIGHT_GREY
 			grid_cube.position = pos
 
-var prevColor = GameCube.COLORS.RED
-
-func spawn_random_piece():
+func spawn_random_piece() -> void:
 	var randomColor = GameCube.usableColors.filter(func(e):
 		return e != prevColor
 	).pick_random()
@@ -82,6 +83,7 @@ func set_piece() -> void:
 	
 func not_in_bounds(goalCubePos: Vector3i) -> bool:
 	return goalCubePos.x < 0 or goalCubePos.x >= GRID[0].size() or goalCubePos.y < 0 or goalCubePos.y >= GRID.size()
+
 func is_occupied(goalCubePos: Vector3i, tetrimino: Tetrimino) -> bool:
 	if not_in_bounds(goalCubePos):
 		return true
@@ -107,7 +109,6 @@ func handle_rotate() -> void:
 		SELECTED_TETRIMINO.setCubes()
 		updateGrid(SELECTED_TETRIMINO)
 
-
 func handle_move(global_direction: Vector3) -> bool:	
 	if not SELECTED_TETRIMINO: return false
 		
@@ -128,8 +129,7 @@ func handle_move(global_direction: Vector3) -> bool:
 	updateGrid(SELECTED_TETRIMINO)
 	return true
 
-
-func clearRows():
+func clearRows() -> void:
 	clearFromGrid()
 	for row_idx in range(GRID.size()):
 		var row = GRID[row_idx]
@@ -149,7 +149,7 @@ func clearRows():
 		if tetrimino is Tetrimino and tetrimino.get_child_count() == 0:
 				tetrimino.queue_free()
 
-func clearFromGrid():
+func clearFromGrid() -> void:
 	for row_idx in range(GRID.size()):
 		for col_idx in range(GRID[row_idx].size()):
 			var cube = GRID[row_idx][col_idx]
@@ -166,7 +166,7 @@ func clearFromGrid():
 				if coords.y != row_idx or coords.x != col_idx:
 					GRID[row_idx][col_idx] = null
 
-func updateGrid(tetrimino: Tetrimino):
+func updateGrid(tetrimino: Tetrimino) -> void:
 	#print(GRID)
 	#print("\n\n")
 	if not tetrimino: return
@@ -177,7 +177,19 @@ func updateGrid(tetrimino: Tetrimino):
 			var coords = to_grid_coords(cube.global_position)
 			tetrimino.last_coords.append(coords)
 			GRID[coords.y][coords.x] = cube
-var prevTime = 0
+
+func get_level() -> int:
+	return lines_cleared/10
+
+func adjust_time(level: int) -> void:
+	if(level == LevelInstance.KILLEVEL):
+		TICK_SPEED = LevelInstance.KILLTIME
+		return
+	if(level >= LevelInstance.LevelArray.size()):
+		TICK_SPEED = LevelInstance.LevelArray[LevelInstance.LevelArray.size()-1]
+		return
+	
+	TICK_SPEED = LevelInstance.LevelArray[level]	
 
 func prettyPrint(grid: Array[Array]) -> String:
 	var s = ""
@@ -189,7 +201,7 @@ func prettyPrint(grid: Array[Array]) -> String:
 	return s 
 
 func _ready() -> void:
-	TICK_SPEED_TIMER.wait_time = TICK_SPEED
+	TICK_SPEED_TIMER.wait_time = 0.8
 	#print(SPAWNING_POSITION)
 	setupGrid()
 	#SELECTED_TETRIMINO.addShape(Tetrimino_Arrangements.j)
@@ -204,6 +216,11 @@ func _ready() -> void:
 		
 		var res: bool = await handle_move(to_global_direction(Vector3(0,-1,0)))
 		if not res: set_piece()
+		
+		var lvl = get_level()
+		
+		adjust_time(lvl)
+		
 		TICK_SPEED_TIMER.wait_time = TICK_SPEED
 		TICK_SPEED_TIMER.start()
 	)
