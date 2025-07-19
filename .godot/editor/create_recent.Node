@@ -1,0 +1,13 @@
+WorldEnvironment
+RichTextLabel
+Timer
+Tetrimino
+Node3D
+GameCube
+GridMap
+DirectionalLight3D
+Camera3D
+CharacterBody3D
+CollisionShape3D
+MeshInstance3D
+Sprite3D
