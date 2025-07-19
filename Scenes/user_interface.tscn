@@ -30,13 +30,13 @@ anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 19.0
 offset_top = -273.0
-offset_right = 423.0
+offset_right = 539.0
 offset_bottom = -18.0
-theme_override_font_sizes/normal_font_size = 20
+theme_override_font_sizes/normal_font_size = 17
 text = "W A S D  to move Camera Forward
-← → to move Tetris Piece left and right 
-↓ to move Tetris Piece down
-↑  to rotate Tetris Piece
+Left and Right Arrow Keys to move Tetris Piece left and right 
+Down Arrow Key to move Tetris Piece down
+Up Arrow Key  to rotate Tetris Piece
 
 Esc to pause
 R to reset Tetris Board
