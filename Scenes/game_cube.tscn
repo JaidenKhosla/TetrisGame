@@ -15,7 +15,7 @@ script = ExtResource("1_nncsj")
 [node name="model" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
 material_override = SubResource("StandardMaterial3D_nncsj")
-visibility_range_end = 10000.0
+visibility_range_end = 100000.0
 mesh = ExtResource("2_nncsj")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

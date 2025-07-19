@@ -15,7 +15,7 @@ const ROWS = 20;
 const COLUMNS = 10;
 
 var lines_cleared = 0
-
+var comboScore := [40,100,300,1200]
 var GRID: Array[Array] = []
 @onready var SELECTED_TETRIMINO: Tetrimino
 
@@ -23,6 +23,8 @@ var initialPrev = Vector3(-1,-1,-1)
 var prevPos = initialPrev
 var prevColor = GameCube.COLORS.RED
 var prevTime = 0
+var tickThreshold: int = 1
+var currTicks: int = 0
 
 @onready var TOP: float = self.global_position.y + (ROWS-2)*CUBE_SIZE.y*0.75
 @onready var SPAWNING_POSITION: Vector3 = to_global_coords(Vector3i(3,0,0)) + Vector3(0,TOP,0)
@@ -55,7 +57,7 @@ func setupGrid() -> void:
 			if pushForward: grid_cube.color = GameCube.COLORS.LIGHT_GREY
 			grid_cube.position = pos
 
-func spawn_random_piece() -> void:
+func spawn_random_piece() -> bool:
 	var randomColor = GameCube.usableColors.filter(func(e):
 		return e != prevColor
 	).pick_random()
@@ -70,6 +72,14 @@ func spawn_random_piece() -> void:
 	newTetrimino.addShape(shape)
 	SELECTED_TETRIMINO = newTetrimino
 	SELECTED_TETRIMINO.draw(SPAWNING_POSITION)
+	
+	for cube in SELECTED_TETRIMINO.cubes:
+		if cube and cube is GameCube and not cube.is_queued_for_deletion() and is_instance_valid(cube):
+			var pos = to_grid_coords(cube.global_position)
+			if is_occupied(pos, SELECTED_TETRIMINO) or not_in_bounds(pos):
+				return false
+	
+	return true
 	
 func set_piece() -> void:
 	if not SELECTED_TETRIMINO: return
@@ -130,11 +140,13 @@ func handle_move(global_direction: Vector3) -> bool:
 	return true
 
 func clearRows() -> void:
+	var currLinesCleared = 0
 	clearFromGrid()
 	for row_idx in range(GRID.size()):
 		var row = GRID[row_idx]
-		if row.filter(func(e: Node): return e != null and not e.is_queued_for_deletion() and is_instance_valid(e)).size() == row.size():
+		if row.filter(func(e): return e != null and not e.is_queued_for_deletion() and is_instance_valid(e)).size() == row.size():
 			lines_cleared+=1
+			currLinesCleared+=1
 			for i in range(row.size()):
 				row[i].queue_free()
 				row[i] = null
@@ -148,6 +160,8 @@ func clearRows() -> void:
 	for tetrimino in get_children():
 		if tetrimino is Tetrimino and tetrimino.get_child_count() == 0:
 				tetrimino.queue_free()
+	if currLinesCleared > 0:
+		UserInterface.SCORE += comboScore[currLinesCleared-1]
 
 func clearFromGrid() -> void:
 	for row_idx in range(GRID.size()):
@@ -215,10 +229,18 @@ func _ready() -> void:
 			spawn_random_piece()
 		
 		var res: bool = await handle_move(to_global_direction(Vector3(0,-1,0)))
-		if not res: set_piece()
+		if not res: 
+			set_piece()
+			if currTicks <= tickThreshold:
+				(get_parent() as GameScene).resetGame()
+			currTicks = 0
+		else:
+			currTicks+=1
+		
+		print(currTicks)
 		
 		var lvl = get_level()
-		
+		UserInterface.LEVEL = lvl
 		adjust_time(lvl)
 		
 		TICK_SPEED_TIMER.wait_time = TICK_SPEED

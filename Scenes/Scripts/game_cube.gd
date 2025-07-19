@@ -47,6 +47,7 @@ func updateMaterial(color: Color) -> void:
 	if model:
 		var material = StandardMaterial3D.new()
 		material.albedo_color = color
+		
 		model.material_override = material
 		model.notify_property_list_changed()
 		model.update_gizmos()
