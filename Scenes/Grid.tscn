@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://dqga1owdkttsp" path="res://Scenes/Scripts/grid.gd" id="1_5bwvu"]
 
 [node name="Grid" type="Node3D"]
-process_mode = 1
 script = ExtResource("1_5bwvu")
 
 [node name="GridParts" type="Node3D" parent="."]
