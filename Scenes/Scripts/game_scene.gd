@@ -39,14 +39,14 @@ func resetGame():
 	UserInterface.GameOver.show()
 	await get_tree().create_timer(3).timeout
 	UserInterface.GameOver.hide()
-	
+	UserInterface.LINES_CLEARED = 0
 	UserInterface.SCORE = 0
 	UserInterface.LEVEL = 0
 	currGrid.queue_free()
 	currGrid = GridInstance.instantiate()
 	add_child(currGrid)
 
-func _input(event: InputEvent) -> void:
+func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("PAUSE"):
 		get_tree().paused = !get_tree().paused
 		UserInterface.PAUSED = !UserInterface.PAUSED

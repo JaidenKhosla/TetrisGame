@@ -20,7 +20,8 @@ offset_right = 438.0
 offset_bottom = 185.0
 theme_override_font_sizes/normal_font_size = 30
 text = "Score: 0
-Level: 0"
+Level: 0
+Lines Cleared: 0"
 
 [node name="Keybinds" type="RichTextLabel" parent="."]
 texture_filter = 1

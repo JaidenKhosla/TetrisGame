@@ -43,10 +43,10 @@ func get_size() -> Vector3:
 		await model.ready
 	return model.get_aabb().size;
 
-func updateMaterial(color: Color) -> void:
+func updateMaterial(color_param: Color) -> void:
 	if model:
 		var material = StandardMaterial3D.new()
-		material.albedo_color = color
+		material.albedo_color = color_param
 		
 		model.material_override = material
 		model.notify_property_list_changed()

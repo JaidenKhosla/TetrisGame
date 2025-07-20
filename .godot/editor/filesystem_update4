@@ -5,3 +5,6 @@ res://Scenes/GridBlock.tscn
 res://Scenes/Grid.tscn
 res://Scenes/tetrimino.tscn
 res://Scenes/user_interface.tscn
+res://Scenes/Scripts/Tetrimino.gd
+res://Scenes/Scripts/game_scene.gd
+res://Scenes/Scripts/game_cube.gd

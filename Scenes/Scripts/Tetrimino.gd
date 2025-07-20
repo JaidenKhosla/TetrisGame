@@ -4,12 +4,15 @@ class_name Tetrimino extends Node3D
 
 @onready var cubes: Array[Node]
 
+var CURRTWEEN: Tween
+var CURRGOAL: Vector3
+
 func setCubes():
 	cubes = self.get_children().filter(func(e):
 		return e is GameCube and is_instance_valid(e) and not e.is_queued_for_deletion();
 	)
 
-var cube = preload("res://Scenes/game_cube.tscn")
+var cube_preload = preload("res://Scenes/game_cube.tscn")
 @onready var CUBE_SIZE: Vector3 =  await (InitNode.get_node("GameCube") as GameCube).get_size()
 const colorEnum = GameCube.COLORS
 
@@ -40,11 +43,11 @@ func draw(origin: Vector3):
 	print("DRAW ORIGIN: %v" % curr_origin)
 	var bitmap = shape[curr_idx]
 	for pos in bitmap:
-		var newCube: GameCube = cube.instantiate()
+		var newCube: GameCube = cube_preload.instantiate()
 		add_child(newCube)
 		newCube.color = COLOR
 		newCube.position = Vector3(pos.x, pos.y, 0)*CUBE_SIZE*0.75
-	await get_tree().process_frame
+	#await get_tree().process_frame
 	setCubes()
 	
 func rotate_piece():
@@ -66,23 +69,34 @@ func tween_rotate(deg: float) -> int:
 	await create_tween().tween_property(self, "rotation:z", goal, 0.25).finished
 	isRotating = false
 	return 1
-	
+
+func cancel_tween() -> void:
+	if is_transforming and CURRTWEEN and CURRTWEEN.is_running():
+		CURRTWEEN.kill()
+		global_position = CURRGOAL
+		is_transforming = false
+
 func tween_move(direction: Vector3) -> int:
-	if is_transforming: return 0;
+	
+	cancel_tween()
+		
 	is_transforming = true
-	var goal = global_position+direction;
-	#print("GLOBAL POS: %v" % global_position)
-	#print("DIRECTION: %v" % direction)
-	curr_origin = goal
-	#print("MOVE ORIGIN: %v" % curr_origin)
-	await create_tween().tween_property(self, "global_position", goal, 0.25).finished
-	is_transforming = false
+	CURRGOAL = global_position+direction
+	curr_origin = CURRGOAL
+	
+	var innerTween = create_tween()
+	innerTween.tween_property(self, "global_position", CURRGOAL, 0.25)
+	CURRTWEEN = innerTween
+	innerTween.finished.connect(func():
+		is_transforming = false	
+	)
 	return 1
 
 func blink() -> void:
 	var prevClr = COLOR
 	COLOR = colorEnum.WHITE
-	get_tree().create_timer(0.35).timeout.connect(func():	
+	var timer = get_tree().create_timer(0.35)
+	timer.timeout.connect(func():	
 		COLOR = prevClr
 	)
 	
